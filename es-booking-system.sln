@@ -4,6 +4,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DomainTests", "DomainTests\DomainTests.csproj", "{4A618026-E388-402B-B8BC-C07283DE6BB1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApp", "WebApp\WebApp.csproj", "{AB99678F-DB67-4487-AF76-B01D0174CE4D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MartenAdapter", "MartenAdapter\MartenAdapter.csproj", "{B09C8050-FCAC-41D7-B5EF-0769D815C437}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +22,13 @@ Global
 		{4A618026-E388-402B-B8BC-C07283DE6BB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A618026-E388-402B-B8BC-C07283DE6BB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4A618026-E388-402B-B8BC-C07283DE6BB1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB99678F-DB67-4487-AF76-B01D0174CE4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB99678F-DB67-4487-AF76-B01D0174CE4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB99678F-DB67-4487-AF76-B01D0174CE4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB99678F-DB67-4487-AF76-B01D0174CE4D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B09C8050-FCAC-41D7-B5EF-0769D815C437}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B09C8050-FCAC-41D7-B5EF-0769D815C437}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B09C8050-FCAC-41D7-B5EF-0769D815C437}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B09C8050-FCAC-41D7-B5EF-0769D815C437}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
