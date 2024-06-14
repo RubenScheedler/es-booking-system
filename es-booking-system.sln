@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApp", "WebApp\WebApp.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MartenAdapter", "MartenAdapter\MartenAdapter.csproj", "{B09C8050-FCAC-41D7-B5EF-0769D815C437}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MartenAdapterTests", "MartenAdapterTests\MartenAdapterTests.csproj", "{3F7E673A-0B3D-45D9-8E69-FEA4EE2B3230}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{B09C8050-FCAC-41D7-B5EF-0769D815C437}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B09C8050-FCAC-41D7-B5EF-0769D815C437}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B09C8050-FCAC-41D7-B5EF-0769D815C437}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F7E673A-0B3D-45D9-8E69-FEA4EE2B3230}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F7E673A-0B3D-45D9-8E69-FEA4EE2B3230}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F7E673A-0B3D-45D9-8E69-FEA4EE2B3230}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F7E673A-0B3D-45D9-8E69-FEA4EE2B3230}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
