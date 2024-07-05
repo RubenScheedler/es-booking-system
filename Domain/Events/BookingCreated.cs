@@ -1,3 +1,3 @@
 ﻿namespace Domain.Events;
 
-public record BookingCreated(Guid Id, DateTime CreatedAt) : IEvent;
+public record BookingCreated(Guid BookingId, DateTime CreatedAt) : IBookingEvent;

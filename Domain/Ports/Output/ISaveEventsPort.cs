@@ -4,5 +4,5 @@ namespace Domain.Ports.Output;
 
 public interface ISaveEventsPort
 {
-    void SaveEvents(IReadOnlyCollection<IEvent> events);
+    void SaveEvents(IReadOnlyCollection<IBookingEvent> events);
 }

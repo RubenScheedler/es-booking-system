@@ -1,4 +1,5 @@
 ﻿using Domain.Events;
+using Domain.Exceptions;
 using Domain.Ports.Output;
 using Marten;
 
@@ -6,20 +7,34 @@ namespace MartenAdapter;
 
 public class EventRepository(IDocumentStore store) : ISaveEventsPort
 {
-    public void SaveEvents(IReadOnlyCollection<IEvent> events)
+    public void SaveEvents(IReadOnlyCollection<IBookingEvent> events)
     {
+        if (events.IsEmpty())
+        {
+            throw new EmptyEventStreamException("Cannot save empty event collection");
+        }
+
+        var aggregateId = events.First().BookingId;
+        
         using var session = store.LightweightSession();
 
-        var bookingCreated = (BookingCreated)events.First();
-        session.Events.StartStream(bookingCreated.Id, events);
-
+        var eventStream = session.Events.FetchStream(aggregateId);
+        if (eventStream.IsEmpty())
+        {
+            session.Events.StartStream(aggregateId, events);
+        }
+        else
+        {
+            throw new NotImplementedException();
+            // session.Events.Append(aggregateId, events);
+        }
         session.SaveChanges();
     }
 
-    public IReadOnlyCollection<IEvent> GetEvents(Guid aggregateId)
+    public IReadOnlyCollection<IBookingEvent> GetEvents(Guid aggregateId)
     {
         using var session = store.LightweightSession();
 
-        return session.Events.FetchStream(aggregateId).Select(e => e.Data).Cast<IEvent>().ToList();
+        return session.Events.FetchStream(aggregateId).Select(e => e.Data).Cast<IBookingEvent>().ToList();
     }
 }

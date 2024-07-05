@@ -20,7 +20,7 @@ public class CreateBookingUseCaseTests
         _clockMock.Setup(clock => clock.Now()).Returns(_now);
 
         _saveEventsPortMock = new Mock<ISaveEventsPort>();
-        _saveEventsPortMock.Setup(port => port.SaveEvents(It.IsAny<IReadOnlyCollection<IEvent>>()));
+        _saveEventsPortMock.Setup(port => port.SaveEvents(It.IsAny<IReadOnlyCollection<IBookingEvent>>()));
     }
 
     [Fact]
