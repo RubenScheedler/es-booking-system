@@ -81,6 +81,6 @@ public class BookingRepositoryTests : IAsyncLifetime
         var action = () => _bookingRepository.SaveBooking(booking);
         
         // Assert
-        action.Should().Throw<NotImplementedException>();
+        action.Should().NotThrow<NotImplementedException>();
     }
 }
