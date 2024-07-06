@@ -2,5 +2,5 @@
 
 public interface ICreateBookingPort
 {
-     Booking CreateBooking();
+     Booking CreateBooking(DateTime from, DateTime to);
 }

@@ -1,3 +1,4 @@
+using AutoFixture;
 using Domain.Events;
 using Domain.Exceptions;
 using FluentAssertions;
@@ -16,6 +17,9 @@ public class EventRepositoryTests : IAsyncLifetime
 
     private EventRepository _eventRepository;
     private DocumentStore _documentStore;
+
+    private readonly BookingCreated _stubCreatedEvent =
+        new BookingCreated(Guid.NewGuid(), DateTime.Now, DateTime.Now.AddDays(1), DateTime.Now);
 
     public async Task InitializeAsync()
     {
@@ -51,15 +55,13 @@ public class EventRepositoryTests : IAsyncLifetime
     public void SaveEvents_StreamDoesNotExistYet_SavesEventsIntoDatabase()
     {
         // Arrange
-        var bookingId = Guid.NewGuid();
-        var createdAt = DateTime.Now;
-        IReadOnlyCollection<IBookingEvent> events = [new BookingCreated(bookingId, createdAt)];
+        IReadOnlyCollection<IBookingEvent> events = [_stubCreatedEvent];
 
         // Act
         _eventRepository.SaveEvents(events);
         
         // Assert
-        var result = _eventRepository.GetEvents(bookingId);
+        var result = _eventRepository.GetEvents(_stubCreatedEvent.BookingId);
         result.Should().HaveCount(1);
     }
     
@@ -68,13 +70,11 @@ public class EventRepositoryTests : IAsyncLifetime
     {
         // Arrange
         using var session = _documentStore.LightweightSession();
-        var bookingId = Guid.NewGuid();
-        var createdAt = DateTime.Now;
-        session.Events.StartStream<IBookingEvent>(bookingId, [new BookingCreated(bookingId, createdAt)]);
+        session.Events.StartStream<IBookingEvent>(_stubCreatedEvent.BookingId, [_stubCreatedEvent]);
         session.SaveChanges();
         
         // Act
-        var action = () => _eventRepository.SaveEvents([new BookingCreated(bookingId, createdAt)]);
+        var action = () => _eventRepository.SaveEvents([_stubCreatedEvent]);
         
         // Assert
         action.Should().Throw<NotImplementedException>();

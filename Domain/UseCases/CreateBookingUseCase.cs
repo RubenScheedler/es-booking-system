@@ -6,9 +6,9 @@ namespace Domain.UseCases;
 
 public class CreateBookingUseCase(IClock clock, ISaveEventsPort saveEventsPort) : ICreateBookingPort
 {
-    public Booking CreateBooking()
+    public Booking CreateBooking(DateTime from, DateTime to)
     {
-        var newBooking = new Booking(clock.Now());
+        var newBooking = new Booking(from, to, clock.Now());
 
         saveEventsPort.SaveEvents(newBooking.GetEvents());
         

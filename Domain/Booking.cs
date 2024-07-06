@@ -5,6 +5,8 @@ namespace Domain;
 public class Booking
 {
     public Guid Id { get; private set; }
+    public DateTime From { get; private set; }
+    public DateTime To { get; private set; }
     public DateTime CreatedAt { get; private set; }
     
     private readonly List<IBookingEvent> _events = [];
@@ -15,9 +17,9 @@ public class Booking
         events.ForEach(Apply);
     }
     
-    public Booking(DateTime createdAt)
+    public Booking(DateTime from, DateTime to, DateTime createdAt)
     {
-        ApplyEvent(new BookingCreated(Guid.NewGuid(), createdAt));
+        ApplyEvent(new BookingCreated(Guid.NewGuid(), from, to, createdAt));
     }
 
     private void Apply(IBookingEvent bookingEvent)
@@ -36,7 +38,10 @@ public class Booking
     {
         Id = @event.BookingId;
         CreatedAt = @event.CreatedAt;
-        _events.Add(new BookingCreated(Id, CreatedAt));
+        From = @event.From;
+        To = @event.To;
+        
+        _events.Add(@event);
     }
 
     public IReadOnlyCollection<IBookingEvent> GetEvents()

@@ -1,4 +1,3 @@
-using Domain;
 using Domain.ports.input;
 using Domain.Ports.Output;
 using Domain.UseCases;
@@ -13,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddNpgsqlDataSource(builder.Configuration.GetConnectionString("pedro")!);
+builder.Services.AddNpgsqlDataSource(builder.Configuration.GetConnectionString("Marten")!);
 // Marten
 builder.Services.AddMarten().UseLightweightSessions()
     .UseNpgsqlDataSource();
@@ -36,7 +35,14 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 // Booking endpoints
-app.MapPost("/booking", ([FromServices] ICreateBookingPort createBookingUseCase) => createBookingUseCase.CreateBooking()).WithOpenApi();
+app.MapPost("/booking", 
+    ([FromServices] ICreateBookingPort createBookingUseCase, 
+        DateTime from, 
+        DateTime to
+        ) => createBookingUseCase.CreateBooking(from, to)
+    )
+    .WithOpenApi();
+
 app.MapGet("/booking/{id:guid}", (HttpContext context, Guid id) => new NotImplementedException()).WithOpenApi();
 
 app.Run();
