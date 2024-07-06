@@ -1,14 +1,16 @@
-﻿using Domain.Events;
+﻿using Domain;
+using Domain.Events;
 using Domain.Exceptions;
 using Domain.Ports.Output;
 using Marten;
 
 namespace MartenAdapter;
 
-public class EventRepository(IDocumentStore store) : ISaveEventsPort
+public class BookingRepository(IDocumentStore store) : ISaveBookingPort
 {
-    public void SaveEvents(IReadOnlyCollection<IBookingEvent> events)
+    public void SaveBooking(Booking booking)
     {
+        var events = booking.GetEvents();
         if (events.IsEmpty())
         {
             throw new EmptyEventStreamException("Cannot save empty event collection");

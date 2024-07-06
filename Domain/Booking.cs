@@ -44,8 +44,20 @@ public class Booking
         _events.Add(@event);
     }
 
+    private void ApplyEvent(BookingRescheduled @event)
+    {
+        From = @event.From;
+        To = @event.To;
+        _events.Add(@event);
+    }
+
     public IReadOnlyCollection<IBookingEvent> GetEvents()
     {
         return _events.AsReadOnly();
+    }
+
+    public void Reschedule(DateTime newFrom, DateTime newTo)
+    {
+        ApplyEvent(new BookingRescheduled(Id, newFrom, newTo));
     }
 }

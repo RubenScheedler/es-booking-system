@@ -19,7 +19,7 @@ builder.Services.AddMarten().UseLightweightSessions()
 
 // DI registration
 builder.Services.AddTransient<IClock, Clock>();
-builder.Services.AddTransient<ISaveEventsPort, EventRepository>();
+builder.Services.AddTransient<ISaveBookingPort, BookingRepository>();
 builder.Services.AddTransient<ICreateBookingPort, CreateBookingUseCase>();
 
 // App

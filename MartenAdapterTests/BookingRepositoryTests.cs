@@ -1,4 +1,4 @@
-using AutoFixture;
+using Domain;
 using Domain.Events;
 using Domain.Exceptions;
 using FluentAssertions;
@@ -9,13 +9,13 @@ using Weasel.Core;
 
 namespace MartenAdapterTests;
 
-public class EventRepositoryTests : IAsyncLifetime
+public class BookingRepositoryTests : IAsyncLifetime
 {
     private readonly PostgreSqlContainer _postgresContainer = new PostgreSqlBuilder()
         .WithImage("postgres:15-alpine")
         .Build();
 
-    private EventRepository _eventRepository;
+    private BookingRepository _bookingRepository;
     private DocumentStore _documentStore;
 
     private readonly BookingCreated _stubCreatedEvent =
@@ -33,7 +33,7 @@ public class EventRepositoryTests : IAsyncLifetime
             options.AutoCreateSchemaObjects = AutoCreate.All;
         });
         
-        _eventRepository = new EventRepository(_documentStore);
+        _bookingRepository = new BookingRepository(_documentStore);
     }
 
     public async Task DisposeAsync()
@@ -42,39 +42,43 @@ public class EventRepositoryTests : IAsyncLifetime
     }
 
     [Fact]
-    public void SaveEvents_EmptyCollection_ThrowsException()
+    public void SaveBooking_EmptyCollection_ThrowsException()
     {
+        // Arrange
+        var booking = new Booking([]);
+        
         // Act
-        var action = () => _eventRepository.SaveEvents([]);
+        var action = () => _bookingRepository.SaveBooking(booking);
         
         // Assert
         action.Should().Throw<EmptyEventStreamException>();
     }
     
     [Fact]
-    public void SaveEvents_StreamDoesNotExistYet_SavesEventsIntoDatabase()
+    public void SaveBooking_StreamDoesNotExistYet_SavesEventsIntoDatabase()
     {
         // Arrange
-        IReadOnlyCollection<IBookingEvent> events = [_stubCreatedEvent];
-
+        var booking = new Booking([_stubCreatedEvent]);
+        
         // Act
-        _eventRepository.SaveEvents(events);
+        _bookingRepository.SaveBooking(booking);
         
         // Assert
-        var result = _eventRepository.GetEvents(_stubCreatedEvent.BookingId);
+        var result = _bookingRepository.GetEvents(_stubCreatedEvent.BookingId);
         result.Should().HaveCount(1);
     }
     
     [Fact]
-    public void SaveEvents_StreamExistsAlready_ThrowsNotImplementedException()
+    public void SaveBooking_StreamExistsAlready_ThrowsNotImplementedException()
     {
         // Arrange
         using var session = _documentStore.LightweightSession();
         session.Events.StartStream<IBookingEvent>(_stubCreatedEvent.BookingId, [_stubCreatedEvent]);
         session.SaveChanges();
+        var booking = new Booking([_stubCreatedEvent]);
         
         // Act
-        var action = () => _eventRepository.SaveEvents([_stubCreatedEvent]);
+        var action = () => _bookingRepository.SaveBooking(booking);
         
         // Assert
         action.Should().Throw<NotImplementedException>();

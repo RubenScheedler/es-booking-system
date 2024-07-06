@@ -2,7 +2,7 @@
 using Domain;
 using Domain.Events;
 using FluentAssertions;
-using Moq;
+using TestUtility;
 using Xunit;
 
 namespace DomainTests;
@@ -112,5 +112,51 @@ public class BookingTests
         
         // Assert
         results.Should().BeEquivalentTo([bookingCreatedEvent]);
+    }
+
+    [Fact]
+    public void Reschedule_AddsBookingRescheduledEvent()
+    {
+        // Arrange
+        var booking = BookingFixture.ValidBooking();
+        var newFrom = booking.From.AddDays(1);
+        var newTo = booking.To.AddDays(1);
+
+        // Act
+        booking.Reschedule(newFrom, newTo);
+        
+        // Assert
+        booking.GetEvents().Last().Should().Be(new BookingRescheduled(booking.Id, newFrom, newTo));
+    }
+    
+    [Fact]
+    public void Reschedule_UpdatesFrom()
+    {
+        // Arrange
+        var booking = BookingFixture.ValidBooking();
+        var newFrom = booking.From.AddDays(1);
+        var newTo = booking.To.AddDays(1);
+
+        // Act
+        booking.Reschedule(newFrom, newTo);
+        
+        // Assert
+        booking.From.Should().Be(newFrom);
+    }
+    
+    
+    [Fact]
+    public void Reschedule_UpdatesTo()
+    {
+        // Arrange
+        var booking = BookingFixture.ValidBooking();
+        var newFrom = booking.From.AddDays(1);
+        var newTo = booking.To.AddDays(1);
+
+        // Act
+        booking.Reschedule(newFrom, newTo);
+        
+        // Assert
+        booking.To.Should().Be(newTo);
     }
 }

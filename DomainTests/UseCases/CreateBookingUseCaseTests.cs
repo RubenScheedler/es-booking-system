@@ -1,4 +1,4 @@
-﻿using Domain.Events;
+﻿using Domain;
 using Domain.Ports.Output;
 using Domain.UseCases;
 using Domain.Utility;
@@ -11,7 +11,7 @@ namespace DomainTests.UseCases;
 public class CreateBookingUseCaseTests
 {
     private readonly Mock<IClock> _clockMock;
-    private readonly Mock<ISaveEventsPort> _saveEventsPortMock;
+    private readonly Mock<ISaveBookingPort> _saveBookingPortMock;
     private readonly DateTime _now = DateTime.Now;
     private readonly DateTime _from = DateTime.Now.AddDays(7);
     private readonly DateTime _to = DateTime.Now.AddDays(14);
@@ -22,10 +22,10 @@ public class CreateBookingUseCaseTests
         _clockMock = new Mock<IClock>();
         _clockMock.Setup(clock => clock.Now()).Returns(_now);
 
-        _saveEventsPortMock = new Mock<ISaveEventsPort>();
-        _saveEventsPortMock.Setup(port => port.SaveEvents(It.IsAny<IReadOnlyCollection<IBookingEvent>>()));
+        _saveBookingPortMock = new Mock<ISaveBookingPort>();
+        _saveBookingPortMock.Setup(port => port.SaveBooking(It.IsAny<Booking>()));
         
-        _systemUnderTest = new CreateBookingUseCase(_clockMock.Object, _saveEventsPortMock.Object);
+        _systemUnderTest = new CreateBookingUseCase(_clockMock.Object, _saveBookingPortMock.Object);
     }
 
     [Fact]
@@ -40,14 +40,14 @@ public class CreateBookingUseCaseTests
     }
     
     [Fact]
-    public void CreateBooking_CallsSaveEvents()
+    public void CreateBooking_CallsSaveBooking()
     {
         // Act
         _systemUnderTest.CreateBooking(_from, _to);
         
         // Assert
-        _saveEventsPortMock.VerifyAll();
-        _saveEventsPortMock.VerifyNoOtherCalls();
+        _saveBookingPortMock.VerifyAll();
+        _saveBookingPortMock.VerifyNoOtherCalls();
     }
     
     [Fact]
