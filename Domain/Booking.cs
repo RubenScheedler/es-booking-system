@@ -29,6 +29,9 @@ public class Booking
             case BookingCreated bookingCreated:
                 ApplyEvent(bookingCreated);
                 break;
+            case BookingRescheduled bookingRescheduled:
+                ApplyEvent(bookingRescheduled);
+                break;
             default:
                 throw new Exception($"Event not supported: {bookingEvent.GetType()}");
         }

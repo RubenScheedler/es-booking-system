@@ -97,6 +97,22 @@ public class BookingTests
     }
 
     [Fact]
+    public void Reconstruction_WithBookingRescheduled_SetsFromAndTo()
+    {
+        // Given
+        var expectedFrom = _anyDate;
+        var expectedTo = _anyDate.AddDays(1);
+        var bookingRescheduled = new BookingRescheduled(Guid.NewGuid(), expectedFrom, expectedTo);
+        
+        // When
+        var result = new Booking([bookingRescheduled]);
+        
+        // Then
+        result.From.Should().Be(expectedFrom);
+        result.To.Should().Be(expectedTo);
+    }
+
+    [Fact]
     public void GetEvents_ReturnsEvents()
     {
         // Arrange

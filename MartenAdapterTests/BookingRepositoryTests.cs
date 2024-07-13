@@ -18,8 +18,14 @@ public class BookingRepositoryTests : IAsyncLifetime
     private BookingRepository _bookingRepository;
     private DocumentStore _documentStore;
 
+    private static readonly Guid BookingId = Guid.NewGuid();
+
     private readonly BookingCreated _stubCreatedEvent =
-        new BookingCreated(Guid.NewGuid(), DateTime.Now, DateTime.Now.AddDays(1), DateTime.Now);
+        new (BookingId, DateTime.Now, DateTime.Now.AddDays(1), DateTime.Now);
+
+    private readonly BookingRescheduled _stubBookingRescheduledEvent =
+        new (BookingId, DateTime.Now.AddDays(1), DateTime.Now.AddDays(2));
+
 
     public async Task InitializeAsync()
     {
@@ -69,13 +75,13 @@ public class BookingRepositoryTests : IAsyncLifetime
     }
     
     [Fact]
-    public void SaveBooking_StreamExistsAlready_ThrowsNotImplementedException()
+    public void SaveBooking_StreamExistsAlready_SavesNewEventsOnly()
     {
         // Arrange
         using var session = _documentStore.LightweightSession();
         session.Events.StartStream<IBookingEvent>(_stubCreatedEvent.BookingId, [_stubCreatedEvent]);
         session.SaveChanges();
-        var booking = new Booking([_stubCreatedEvent]);
+        var booking = new Booking([_stubCreatedEvent, _stubBookingRescheduledEvent]);
         
         // Act
         var action = () => _bookingRepository.SaveBooking(booking);

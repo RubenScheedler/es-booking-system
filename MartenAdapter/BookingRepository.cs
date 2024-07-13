@@ -20,17 +20,25 @@ public class BookingRepository(IDocumentStore store) : ISaveBookingPort
         
         using var session = store.LightweightSession();
 
-        var eventStream = session.Events.FetchStream(aggregateId);
-        if (eventStream.IsEmpty())
+        var eventStreamState = session.Events.FetchStreamState(aggregateId);
+        if (eventStreamState == null)
         {
             session.Events.StartStream(aggregateId, events);
         }
         else
         {
-            throw new NotImplementedException();
-            // session.Events.Append(aggregateId, events);
+            var versionOfPersistedAggregate = eventStreamState.Version;
+            var eventsToBePersisted = GetNewEvents(events, versionOfPersistedAggregate);
+            var expectedNewVersion = events.Count;
+            
+            session.Events.Append(aggregateId, expectedNewVersion, eventsToBePersisted);
         }
         session.SaveChanges();
+    }
+
+    private IEnumerable<IBookingEvent> GetNewEvents(IReadOnlyCollection<IBookingEvent> events, long sinceVersion)
+    {
+        return events.Skip((int)sinceVersion);
     }
 
     public IReadOnlyCollection<IBookingEvent> GetEvents(Guid aggregateId)
