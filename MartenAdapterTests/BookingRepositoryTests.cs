@@ -84,9 +84,10 @@ public class BookingRepositoryTests : IAsyncLifetime
         var booking = new Booking([_stubCreatedEvent, _stubBookingRescheduledEvent]);
         
         // Act
-        var action = () => _bookingRepository.SaveBooking(booking);
+        _bookingRepository.SaveBooking(booking);
         
         // Assert
-        action.Should().NotThrow<NotImplementedException>();
+        var result = _bookingRepository.GetEvents(_stubCreatedEvent.BookingId);
+        result.Should().HaveCount(booking.GetEvents().Count);
     }
 }
