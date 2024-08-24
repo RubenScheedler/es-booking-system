@@ -12,7 +12,7 @@ public class BookingRepository(IDocumentStore store) : ISaveBookingPort
 {
     public void SaveBooking(Booking booking)
     {
-        var events = booking.GetEvents();
+        var events = booking.GetNewEvents();
         if (events.IsEmpty())
         {
             throw new EmptyEventStreamException("Cannot save empty event collection");

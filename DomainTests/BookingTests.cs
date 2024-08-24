@@ -69,13 +69,13 @@ public class BookingTests
     }
 
     [Fact]
-    public void Constructor_AddsBookingCreatedEventToEvents()
+    public void Constructor_AddsBookingCreatedEventToNewEvents()
     {
         // Act
         var booking = new Booking(_anyDate, _anyDate, _anyDate);
 
         // Assert
-        booking.GetEvents().Should().Contain(new BookingCreated(booking.Id, booking.From, booking.To, booking.CreatedAt));
+        booking.GetNewEvents().Should().Contain(new BookingCreated(booking.Id, booking.From, booking.To, booking.CreatedAt));
     }
     
     [Fact]
@@ -113,25 +113,7 @@ public class BookingTests
     }
 
     [Fact]
-    public void GetEvents_ReturnsEvents()
-    {
-        // Arrange
-        var bookingId = Guid.NewGuid();
-        var from = DateTime.UtcNow;
-        var to = DateTime.UtcNow;
-        var createdAt = DateTime.UtcNow;
-        var bookingCreatedEvent = new BookingCreated(bookingId, from, to, createdAt);
-        var booking = new Booking([bookingCreatedEvent]);
-        
-        // Act
-        var results = booking.GetEvents();
-        
-        // Assert
-        results.Should().BeEquivalentTo([bookingCreatedEvent]);
-    }
-
-    [Fact]
-    public void Reschedule_AddsBookingRescheduledEvent()
+    public void Reschedule_AddsBookingRescheduledToNewEvent()
     {
         // Arrange
         var booking = BookingFixture.ValidBooking();
@@ -142,7 +124,7 @@ public class BookingTests
         booking.Reschedule(newFrom, newTo);
         
         // Assert
-        booking.GetEvents().Last().Should().Be(new BookingRescheduled(booking.Id, newFrom, newTo));
+        booking.GetNewEvents().Last().Should().Be(new BookingRescheduled(booking.Id, newFrom, newTo));
     }
     
     [Fact]

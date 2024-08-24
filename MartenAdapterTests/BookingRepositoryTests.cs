@@ -88,6 +88,6 @@ public class BookingRepositoryTests : IAsyncLifetime
         
         // Assert
         var result = _bookingRepository.GetEvents(_stubCreatedEvent.BookingId);
-        result.Should().HaveCount(booking.GetEvents().Count);
+        result.Should().HaveCount(booking.GetNewEvents().Count);
     }
 }

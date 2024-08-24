@@ -45,7 +45,7 @@ public class RescheduleBookingUseCaseTests
         
         // Assert
         _saveBookingPort.Verify(port => port.SaveBooking(It.Is<Booking>(
-            saved => saved.GetEvents().Last().Equals(new BookingRescheduled(_bookingId, newFrom, newTo)))
+            saved => saved.GetNewEvents().Last().Equals(new BookingRescheduled(_bookingId, newFrom, newTo)))
             )
         );
     }

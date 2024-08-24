@@ -9,7 +9,10 @@ public class Booking
     public DateTime To { get; private set; }
     public DateTime CreatedAt { get; private set; }
     
-    private readonly List<IBookingEvent> _events = [];
+    /// <summary>
+    /// Contains events of changes happened to this object since its runtime construction.
+    /// </summary>
+    private readonly List<IBookingEvent> _newEvents = [];
 
     // For event sourced reconstruction
     public Booking(List<IBookingEvent> events)
@@ -19,7 +22,10 @@ public class Booking
     
     public Booking(DateTime from, DateTime to, DateTime createdAt)
     {
-        ApplyEvent(new BookingCreated(Guid.NewGuid(), from, to, createdAt));
+        var @event = new BookingCreated(Guid.NewGuid(), from, to, createdAt);
+        _newEvents.Add(@event);
+        
+        ApplyEvent(@event);
     }
 
     private void Apply(IBookingEvent bookingEvent)
@@ -43,24 +49,24 @@ public class Booking
         CreatedAt = @event.CreatedAt;
         From = @event.From;
         To = @event.To;
-        
-        _events.Add(@event);
     }
 
     private void ApplyEvent(BookingRescheduled @event)
     {
         From = @event.From;
         To = @event.To;
-        _events.Add(@event);
     }
 
-    public IReadOnlyCollection<IBookingEvent> GetEvents()
+    public IReadOnlyCollection<IBookingEvent> GetNewEvents()
     {
-        return _events.AsReadOnly();
+        return _newEvents.AsReadOnly();
     }
 
     public void Reschedule(DateTime newFrom, DateTime newTo)
     {
-        ApplyEvent(new BookingRescheduled(Id, newFrom, newTo));
+        var @event = new BookingRescheduled(Id, newFrom, newTo);
+        _newEvents.Add(@event);
+
+        ApplyEvent(@event);
     }
 }
