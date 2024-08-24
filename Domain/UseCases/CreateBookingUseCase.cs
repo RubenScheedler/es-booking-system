@@ -10,7 +10,7 @@ public class CreateBookingUseCase(IClock clock, ISaveBookingPort saveBookingPort
     {
         var newBooking = new Booking(from, to, clock.Now());
 
-        saveBookingPort.SaveBooking(newBooking);
+        saveBookingPort.SaveBookingEvents(newBooking.GetNewEvents(), newBooking.GetNewEvents().Count);
         
         return newBooking;
     }

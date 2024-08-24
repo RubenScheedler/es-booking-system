@@ -3,14 +3,20 @@ using Domain.Ports.Output;
 
 namespace Domain.UseCases;
 
-public class RescheduleBookingUseCase(IGetBookingPort getBookingPort, ISaveBookingPort saveBookingPort) : IRescheduleBookingPort
+public class RescheduleBookingUseCase(IGetBookingEventsPort getBookingEventsPort, ISaveBookingPort saveBookingPort) : IRescheduleBookingPort
 {
+    // TODO transaction wrapper + retry
     public void RescheduleBooking(Guid bookingId, DateTime newFrom, DateTime newTo)
     {
-        var booking = getBookingPort.GetBooking(bookingId);
+        var bookingEvents = getBookingEventsPort.GetBookingEvents(bookingId);
+        var originalAggregateVersion = bookingEvents.Count;
 
-        booking.Reschedule(newFrom, newTo);
+        var booking = new Booking(bookingEvents);
         
-        saveBookingPort.SaveBooking(booking);
+        booking.Reschedule(newFrom, newTo);
+
+        var newEvents = booking.GetNewEvents();
+        var expectedVersion = originalAggregateVersion + newEvents.Count;
+        saveBookingPort.SaveBookingEvents(newEvents, expectedVersion);
     }
 }

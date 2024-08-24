@@ -3,14 +3,14 @@ using Domain.Events;
 
 namespace TestUtility;
 
-public static class BookingFixture
+public static class BookingEventsFixture
 {
     public static Booking ValidBooking()
     {
-        return ValidBooking(Guid.NewGuid());
+        return new Booking([ValidBookingCreated(Guid.NewGuid())]);
     }
     
-    public static Booking ValidBooking(Guid bookingId)
+    public static BookingCreated ValidBookingCreated(Guid bookingId)
     {
         var bookingCreated = new BookingCreated(
             bookingId, 
@@ -18,6 +18,6 @@ public static class BookingFixture
             DateTime.Now.AddDays(1), 
             DateTime.Now
         );
-        return new Booking([bookingCreated]);
+        return bookingCreated;
     }
 }

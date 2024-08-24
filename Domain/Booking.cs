@@ -15,9 +15,9 @@ public class Booking
     private readonly List<IBookingEvent> _newEvents = [];
 
     // For event sourced reconstruction
-    public Booking(List<IBookingEvent> events)
+    public Booking(IReadOnlyCollection<IBookingEvent> events)
     {
-        events.ForEach(Apply);
+        events.ToList().ForEach(Apply);
     }
     
     public Booking(DateTime from, DateTime to, DateTime createdAt)

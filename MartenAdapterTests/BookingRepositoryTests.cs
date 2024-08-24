@@ -1,4 +1,3 @@
-using Domain;
 using Domain.Events;
 using Domain.Exceptions;
 using FluentAssertions;
@@ -50,11 +49,8 @@ public class BookingRepositoryTests : IAsyncLifetime
     [Fact]
     public void SaveBooking_EmptyCollection_ThrowsException()
     {
-        // Arrange
-        var booking = new Booking([]);
-        
         // Act
-        var action = () => _bookingRepository.SaveBooking(booking);
+        var action = () => _bookingRepository.SaveBookingEvents([], 0);
         
         // Assert
         action.Should().Throw<EmptyEventStreamException>();
@@ -64,30 +60,30 @@ public class BookingRepositoryTests : IAsyncLifetime
     public void SaveBooking_StreamDoesNotExistYet_SavesEventsIntoDatabase()
     {
         // Arrange
-        var booking = new Booking([_stubCreatedEvent]);
+        var expectedVersion = 1; // created
         
         // Act
-        _bookingRepository.SaveBooking(booking);
+        _bookingRepository.SaveBookingEvents([_stubCreatedEvent], expectedVersion);
         
         // Assert
-        var result = _bookingRepository.GetEvents(_stubCreatedEvent.BookingId);
-        result.Should().HaveCount(1);
+        var result = _bookingRepository.GetBookingEvents(_stubCreatedEvent.BookingId);
+        result.Should().HaveCount(expectedVersion);
     }
     
     [Fact]
-    public void SaveBooking_StreamExistsAlready_SavesNewEventsOnly()
+    public void SaveBooking_StreamExistsAlready_SavesEventsIntoDatabase()
     {
         // Arrange
         using var session = _documentStore.LightweightSession();
         session.Events.StartStream<IBookingEvent>(_stubCreatedEvent.BookingId, [_stubCreatedEvent]);
         session.SaveChanges();
-        var booking = new Booking([_stubCreatedEvent, _stubBookingRescheduledEvent]);
-        
+        var expectedVersion = 2; // created, rescheduled
+
         // Act
-        _bookingRepository.SaveBooking(booking);
+        _bookingRepository.SaveBookingEvents([_stubBookingRescheduledEvent], expectedVersion);
         
         // Assert
-        var result = _bookingRepository.GetEvents(_stubCreatedEvent.BookingId);
-        result.Should().HaveCount(booking.GetNewEvents().Count);
+        var result = _bookingRepository.GetBookingEvents(_stubCreatedEvent.BookingId);
+        result.Should().HaveCount(expectedVersion);
     }
 }

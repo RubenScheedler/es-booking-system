@@ -1,4 +1,5 @@
-﻿using Domain;
+﻿using System.Linq.Expressions;
+using Domain;
 using Domain.Events;
 using Domain.Ports.Output;
 using Domain.UseCases;
@@ -12,17 +13,16 @@ public class RescheduleBookingUseCaseTests
 {
     private readonly Guid _bookingId = Guid.NewGuid();
     private readonly RescheduleBookingUseCase _systemUnderTest;
-    private readonly Mock<IGetBookingPort> _getBookingPort;
+    private readonly Mock<IGetBookingEventsPort> _getBookingEventsPort;
     private readonly Mock<ISaveBookingPort> _saveBookingPort;
 
     public RescheduleBookingUseCaseTests()
     {
-        _getBookingPort = new Mock<IGetBookingPort>();
-        var stubBooking = BookingFixture.ValidBooking(_bookingId);
-        _getBookingPort.Setup(port => port.GetBooking(It.IsAny<Guid>()))
-            .Returns(stubBooking);
+        _getBookingEventsPort = new Mock<IGetBookingEventsPort>();
+        _getBookingEventsPort.Setup(port => port.GetBookingEvents(It.IsAny<Guid>()))
+            .Returns([BookingEventsFixture.ValidBookingCreated(_bookingId)]);
         _saveBookingPort = new Mock<ISaveBookingPort>();
-        _systemUnderTest = new RescheduleBookingUseCase(_getBookingPort.Object, _saveBookingPort.Object);
+        _systemUnderTest = new RescheduleBookingUseCase(_getBookingEventsPort.Object, _saveBookingPort.Object);
     }
 
     [Fact]
@@ -32,20 +32,29 @@ public class RescheduleBookingUseCaseTests
         _systemUnderTest.RescheduleBooking(_bookingId, DateTime.Now, DateTime.Now.AddDays(1));
         
         // Assert
-        _getBookingPort.Verify(port => port.GetBooking(_bookingId));
+        _getBookingEventsPort.Verify(port => port.GetBookingEvents(_bookingId));
     }
     
     [Fact]
     public void RescheduleBooking_SavesRescheduledBooking()
     {
-        // Act
+        // Arrange
         var newFrom = DateTime.Now;
         var newTo = DateTime.Now.AddDays(1);
+        
+        var expectedEvent = new BookingRescheduled(_bookingId, newFrom, newTo);
+        var expectedExpectedVersion = 2; // created, rescheduled
+        
+        // Act
         _systemUnderTest.RescheduleBooking(_bookingId, newFrom, newTo);
         
         // Assert
-        _saveBookingPort.Verify(port => port.SaveBooking(It.Is<Booking>(
-            saved => saved.GetNewEvents().Last().Equals(new BookingRescheduled(_bookingId, newFrom, newTo)))
+        _saveBookingPort.Verify(port =>
+            port.SaveBookingEvents(
+                It.Is<IReadOnlyCollection<IBookingEvent>>(actual => 
+                    actual.Count == 1 &&
+                    actual.ToList()[0].Equals(expectedEvent)),
+                It.Is<long>(actual => actual.Equals(expectedExpectedVersion))
             )
         );
     }

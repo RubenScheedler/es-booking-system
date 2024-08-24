@@ -1,4 +1,5 @@
-﻿using Domain;
+﻿using System.Collections.ObjectModel;
+using Domain.Events;
 using Domain.Ports.Output;
 using Domain.UseCases;
 using Domain.Utility;
@@ -23,7 +24,10 @@ public class CreateBookingUseCaseTests
         _clockMock.Setup(clock => clock.Now()).Returns(_now);
 
         _saveBookingPortMock = new Mock<ISaveBookingPort>();
-        _saveBookingPortMock.Setup(port => port.SaveBooking(It.IsAny<Booking>()));
+        _saveBookingPortMock.Setup(port => port.SaveBookingEvents(
+            It.IsAny<IReadOnlyCollection<IBookingEvent>>(), 
+            It.IsAny<long>())
+        );
         
         _systemUnderTest = new CreateBookingUseCase(_clockMock.Object, _saveBookingPortMock.Object);
     }
@@ -42,14 +46,24 @@ public class CreateBookingUseCaseTests
     [Fact]
     public void CreateBooking_CallsSaveBooking()
     {
+        // Arrange
+        var expectedExpectedVersion = 1; // created
+
         // Act
-        _systemUnderTest.CreateBooking(_from, _to);
+        var createdBooking = _systemUnderTest.CreateBooking(_from, _to);
         
         // Assert
-        _saveBookingPortMock.VerifyAll();
-        _saveBookingPortMock.VerifyNoOtherCalls();
+        var expectedEvent = new BookingCreated(createdBooking.Id, _from, _to, createdBooking.CreatedAt);
+
+        _saveBookingPortMock.Verify(port => port.SaveBookingEvents(
+            It.Is<IReadOnlyCollection<IBookingEvent>>(
+                actual => actual.Count == 1 
+                          && actual.ToList()[0].Equals(expectedEvent)
+                ),
+            It.Is<long>(actual => actual == expectedExpectedVersion)
+        ));
     }
-    
+
     [Fact]
     public void CreateBooking_ReturnsNewBooking()
     {

@@ -116,7 +116,7 @@ public class BookingTests
     public void Reschedule_AddsBookingRescheduledToNewEvent()
     {
         // Arrange
-        var booking = BookingFixture.ValidBooking();
+        var booking = BookingEventsFixture.ValidBooking();
         var newFrom = booking.From.AddDays(1);
         var newTo = booking.To.AddDays(1);
 
@@ -131,7 +131,7 @@ public class BookingTests
     public void Reschedule_UpdatesFrom()
     {
         // Arrange
-        var booking = BookingFixture.ValidBooking();
+        var booking = BookingEventsFixture.ValidBooking();
         var newFrom = booking.From.AddDays(1);
         var newTo = booking.To.AddDays(1);
 
@@ -147,7 +147,7 @@ public class BookingTests
     public void Reschedule_UpdatesTo()
     {
         // Arrange
-        var booking = BookingFixture.ValidBooking();
+        var booking = BookingEventsFixture.ValidBooking();
         var newFrom = booking.From.AddDays(1);
         var newTo = booking.To.AddDays(1);
 

@@ -4,5 +4,5 @@ namespace Domain.Ports.Output;
 
 public interface ISaveBookingPort
 {
-    void SaveBooking(Booking booking);
+    void SaveBookingEvents(IReadOnlyCollection<IBookingEvent> events, long expectedVersion);
 }
